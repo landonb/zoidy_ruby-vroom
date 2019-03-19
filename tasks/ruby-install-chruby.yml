@@ -1,0 +1,75 @@
+---
+
+# *** Local variables (Facts).
+
+- set_fact:
+    CHRUBY_VER: '0.3.9'
+
+- set_fact:
+    CHRUBY_URI: "https://github.com/postmodern/chruby/archive/v{{ CHRUBY_VER }}.tar.gz"
+
+- set_fact:
+    CHRUBY_NOM: "chruby-{{ CHRUBY_VER }}"
+
+- set_fact:
+    CHRUBY_TAR: "{{ zoidy_homefries_downloads_dir }}/{{ CHRUBY_NOM }}.tar.gz"
+
+- set_fact:
+    CHRUBY_DIR: "{{ zoidy_homefries_downloads_dir }}/chruby"
+
+- set_fact:
+    CHRUBY_ASC: "https://raw.github.com/postmodern/chruby/master/pkg/{{ CHRUBY_NOM }}.tar.gz.asc"
+
+# *** Alert user if newer version.
+
+# FIXME/2019-01-02: Run this and other curl's, or check GitHubs, for latest versions (of things).
+#   See ripgrep-install.yml et al
+
+# *** Install `chruby` author's signing PGP key 0xB9515E77.
+
+#   See: chruby-install.yml
+
+# ***
+
+- name: Fetch latest chruby release
+  get_url:
+    url: "{{ CHRUBY_URI }}"
+    dest: "{{ CHRUBY_TAR }}"
+
+# ***
+
+- name: "Fetch Postmodern's PGP ASCII Armored file"
+  get_url:
+    url: "{{ CHRUBY_ASC }}"
+    dest: "{{ zoidy_homefries_downloads_dir }}/{{ CHRUBY_NOM }}.tar.gz.asc"
+
+# This'll fail on nonzero return code.
+- name: "Verify chruby download"
+  command: "gpg --verify {{ CHRUBY_NOM }}.tar.gz.asc {{ CHRUBY_NOM }}.tar.gz"
+  args:
+    chdir: "{{ zoidy_homefries_downloads_dir }}"
+#  register: gpg_verify_result
+
+#- debug: msg="{{ gpg_verify_result }}"
+
+# ***
+
+- name: Ensure chruby unpack directory exists
+  file: path={{ CHRUBY_DIR }} state=directory
+
+- name: Unarchive the chruby release archive
+  unarchive:
+    src: "{{ CHRUBY_TAR }}"
+    dest: "{{ CHRUBY_DIR }}/"
+    remote_src: yes
+
+#- fail: msg=POOP
+
+- name: Install chruby
+  make:
+    chdir: "{{ CHRUBY_DIR }}/{{ CHRUBY_NOM }}"
+    target: install
+  args:
+    params:
+      PREFIX: "{{ ansible_env.HOME }}/.local"
+

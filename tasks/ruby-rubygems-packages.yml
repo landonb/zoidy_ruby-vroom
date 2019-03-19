@@ -1,0 +1,41 @@
+---
+
+- name: Install Various Ruby Gems (user ruby)
+  gem:
+    name: "{{ item }}"
+    state: latest
+    user_install: yes
+  loop:
+    - tmuxinator
+
+# PROFILING: 2019-03-19: Task took: 169.23s.
+- name: Install Many Ruby Gems (chrubies)
+  shell: >
+    source {{ ansible_env.HOME }}/.local/share/chruby/chruby.sh && \
+    chruby {{ item[0] }} && \
+    gem install --user-install {{ item[1] }}
+  args:
+    # Run Bash so `source` works.
+    executable: /bin/bash
+  with_nested:
+    -
+      - 2.4
+      - 2.5
+      - 2.6
+    -
+      - bundler
+      - pry
+      - byebug
+      - commander
+      - rubocop
+      - terminal-table
+      - httparty
+      # man page compiler.
+      - ronn
+      - hpricot
+      - jaro_winkler
+      - rdiscount
+  environment:
+    # Show Ansible path to chruby.
+    PATH: "{{ ansible_env.HOME }}/.local/bin:{{ ansible_env.PATH }}"
+

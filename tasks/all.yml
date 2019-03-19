@@ -1,0 +1,50 @@
+---
+
+- name: Ruby-Install Installer
+  include_role:
+    name: zoidy_ruby-vroom
+    tasks_from: ruby-install-base
+    apply:
+      tags:
+        - ruby-vroom
+        - ruby-install-base
+  tags:
+    - ruby-vroom
+    - ruby-install-base
+
+- name: Ruby-Install Installer
+  include_role:
+    name: zoidy_ruby-vroom
+    tasks_from: ruby-install-chruby
+    apply:
+      tags:
+        - ruby-vroom
+        - ruby-install-chruby
+  tags:
+    - ruby-vroom
+    - ruby-install-chruby
+
+- name: Ruby Gems Package Installer
+  include_role:
+    name: zoidy_ruby-vroom
+    tasks_from: ruby-install-versions
+    apply:
+      tags:
+        - ruby-vroom
+        - ruby-install-versions
+  tags:
+    - ruby-vroom
+    - ruby-install-versions
+
+- name: Ruby Gems Package Installer
+  include_role:
+    name: zoidy_ruby-vroom
+    tasks_from: ruby-rubygems-packages
+    apply:
+      tags:
+        - ruby-vroom
+        - ruby-rubygems-packages
+  tags:
+    - ruby-vroom
+    - ruby-rubygems-packages
+

@@ -1,0 +1,116 @@
+---
+
+# *** Local variables (Facts).
+
+- set_fact:
+    RUBY_INSTALL_VER: '0.7.0'
+
+- set_fact:
+    RUBY_INSTALL_URI: "https://github.com/postmodern/ruby-install/archive/v{{ RUBY_INSTALL_VER }}.tar.gz"
+
+- set_fact:
+    RUBY_INSTALL_NOM: "ruby-install-{{ RUBY_INSTALL_VER }}"
+
+- set_fact:
+    RUBY_INSTALL_TAR: "{{ zoidy_homefries_downloads_dir }}/{{ RUBY_INSTALL_NOM }}.tar.gz"
+
+- set_fact:
+    RUBY_INSTALL_DIR: "{{ zoidy_homefries_downloads_dir }}/ruby-install"
+
+- set_fact:
+    RUBY_INSTALL_ASC: "https://raw.github.com/postmodern/ruby-install/master/pkg/{{ RUBY_INSTALL_NOM }}.tar.gz.asc"
+
+# *** Alert user if newer version.
+
+# FIXME/2019-01-02: Run this and other curl's, or check GitHubs, for latest versions (of things).
+#   See ripgrep-install.yml et al
+
+# *** Install `ruby-install` author's signing PGP key 0xB9515E77.
+
+- name: "Fetch Postmodern's GPG key"
+  get_url:
+    url: "https://raw.github.com/postmodern/postmodern.github.io/master/postmodern.asc"
+    dest: "{{ zoidy_homefries_downloads_dir }}/ruby-install-postmodern.asc"
+
+- name: Import Postmodern's GPG key
+  command: "gpg --import ruby-install-postmodern.asc"
+  args:
+    chdir: "{{ zoidy_homefries_downloads_dir }}"
+  register: gpg_import_result
+  # gpg: key 54C3D9E9B9515E77: "Postmodern Modulus III (Postmodern) <postmodern.mod3@gmail.com>" not changed
+  # gpg: Total number processed: 1
+  # gpg:              unchanged: 1
+
+# - debug: msg="{{ gpg_import_result }}"
+
+- set_fact:
+    POSTMODERN_GPG_KEY: "{{ gpg_import_result.stderr_lines[0] | regex_replace('^gpg: key ([^:]*).*$', '\\1') }}"
+
+# - debug: msg="{{ RUBY_INSTALL_KEY }}"
+
+# From:
+#
+#   https://postmodern.github.io/contact.html#pgp
+#
+# "In order to verify that you have imported the correct key, run the following command:"
+#
+#   $ gpg --fingerprint 0xB9515E77
+#   pub   1024D/B9515E77 2009-09-18
+#         Key fingerprint = 04B2 F3EA 6541 40BC C7DA  1B57 54C3 D9E9 B951 5E77
+#   uid                  Postmodern Modulus III (Postmodern) <postmodern.mod3@gmail.com>
+#   sub   4096g/4BD91DF0 2009-09-18
+#
+# "Make sure to verify that the “Key fingerprint” matches."
+
+- name: Get Postmodern's GPG key
+  command: "gpg --fingerprint 0x{{ POSTMODERN_GPG_KEY }}"
+  register: gpg_fingerprint_result
+
+# - debug: msg="{{ gpg_fingerprint_result }}"
+
+- name: "Verify Postmodern's fingerprint"
+  fail: msg="ERROR∷ Fingerprint Mismatch"
+  when: (gpg_fingerprint_result.stdout_lines[0] != 'pub   dsa1024 2009-09-18 [SCA]') or (gpg_fingerprint_result.stdout_lines[1] != '      04B2 F3EA 6541 40BC C7DA  1B57 54C3 D9E9 B951 5E77')
+
+# ***
+
+- name: Fetch latest ruby-install release
+  get_url:
+    url: "{{ RUBY_INSTALL_URI }}"
+    dest: "{{ RUBY_INSTALL_TAR }}"
+
+# ***
+
+- name: "Fetch Postmodern's PGP ASCII Armored file"
+  get_url:
+    url: "{{ RUBY_INSTALL_ASC }}"
+    dest: "{{ zoidy_homefries_downloads_dir }}/{{ RUBY_INSTALL_NOM }}.tar.gz.asc"
+
+# This'll fail on nonzero return code.
+- name: "Verify ruby-install download"
+  command: "gpg --verify {{ RUBY_INSTALL_NOM }}.tar.gz.asc {{ RUBY_INSTALL_NOM }}.tar.gz"
+  args:
+    chdir: "{{ zoidy_homefries_downloads_dir }}"
+#  register: gpg_verify_result
+
+#- debug: msg="{{ gpg_verify_result }}"
+
+# ***
+
+- name: Ensure ruby-install unpack directory exists
+  file: path={{ RUBY_INSTALL_DIR }} state=directory
+
+- name: Unarchive the ruby-install release archive
+  unarchive:
+    src: "{{ RUBY_INSTALL_TAR }}"
+    dest: "{{ RUBY_INSTALL_DIR }}/"
+    remote_src: yes
+
+- name: Install ruby-install
+  make:
+    chdir: "{{ RUBY_INSTALL_DIR }}/{{ RUBY_INSTALL_NOM }}"
+    target: install
+  args:
+    params:
+      PREFIX: "{{ ansible_env.HOME }}/.local"
+

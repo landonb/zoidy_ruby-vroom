@@ -1,0 +1,59 @@
+---
+
+# *** Local variables (Facts).
+
+# [lb]: 2019-01-02: ruby-install is asking for root password, which I do not
+# recall it doing before, so that it can install some aptitude pacakges. But
+# I am not sure if I can access the root password scored with -K, and I also
+# like keeping zoidy_home-fries tasks free from become, so we preinstall the
+# dependencies in:
+#
+#     zoidy_matecocido/tasks/install-develop-ruby.yml
+#
+# To generate the list, edit:
+#
+#     ${HOME}/.downloads/ruby-install/ruby-install-0.7.0/share/ruby-install/package_manager.sh
+#
+# At l. 34, at start of function install_packages(), add this:
+#
+#     echo "sudo apt install -y $@"
+#
+# Then, reinstall ruby-install:
+#
+#     cd ${HOME}/.downloads/ruby-install/ruby-install-0.7.0
+#     PREFIX=${HOME}/.local make install
+#
+# and run ruby-install to see list of packages to install, e.g.,:
+#
+#     ruby-install --latest ruby 2.5
+#
+# Then copy-paste the sudo-install command. (Note that the package dependencies
+# list is the same for any version of Ruby, existing or not.)
+#
+# This task can then be used to install without asking for password.
+# It runs the equivalent of, e.g.,
+#
+#     ruby-install --no-install-deps --latest ruby 2.5
+
+# PROFILING: 2019-03-19: Task took: 654.14s.
+- name: "Install Rubies 2.*"
+  command: "ruby-install --no-install-deps --latest ruby {{ item }}"
+  loop:
+    # 2019-01-02: Latest Rubies as of the new year, 2019:
+    #   - 2.0.0-p648
+    #   - 2.1.10
+    #   - 2.2.10
+    #   - 2.3.7
+    #   - 2.4.5
+    #   - 2.5.3
+    #   - 2.6.0
+    # [lb] We can only run Ruby 2.4 or better on 18.04, because OpenSSL is 1.1,
+    # not 1.0, and Ruby 2.3 and earlier will fail on compile. Note that you'll
+    # find libssl-dev installed, and you can downgrade to libssl1.0-dev, but you
+    # cannot have both. So, nixxing 2.3. (What's the work around? chroot? virtualbox?)
+    - 2.4
+    - 2.5
+    - 2.6
+  environment:
+    PATH: "{{ ansible_env.HOME }}/.local/bin:{{ ansible_env.PATH }}"
+
