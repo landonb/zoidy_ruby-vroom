@@ -35,7 +35,7 @@
 #
 #     ruby-install --no-install-deps --latest ruby 2.5
 
-# PROFILING: 2019-03-19: Task took: 654.14s.
+# PROFILING: 2019-03-19: Task took: 661.25s.
 - name: "Install Rubies 2.*"
   command: "ruby-install --no-install-deps --latest ruby {{ item }}"
   loop:
