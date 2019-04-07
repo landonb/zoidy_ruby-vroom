@@ -16,7 +16,7 @@
 #
 # At l. 34, at start of function install_packages(), add this:
 #
-#     echo "sudo apt install -y $@"
+#     echo 'sudo apt install -y "$@"'
 #
 # Then, reinstall ruby-install:
 #
