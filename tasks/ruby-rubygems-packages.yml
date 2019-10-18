@@ -35,6 +35,8 @@
       - hpricot
       - jaro_winkler
       - rdiscount
+      # Hastebin Pastebin alternative.
+      - haste
   environment:
     # Show Ansible path to chruby.
     PATH: "{{ ansible_env.HOME }}/.local/bin:{{ ansible_env.PATH }}"
