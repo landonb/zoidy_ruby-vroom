@@ -63,7 +63,7 @@
     dest: "{{ CHRUBY_DIR }}/"
     remote_src: yes
 
-#- fail: msg=POOP
+#- fail: msg='FAIL'
 
 - name: Install chruby
   make:
