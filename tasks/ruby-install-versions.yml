@@ -5,7 +5,7 @@
 # [lb]: 2019-01-02: ruby-install is asking for root password, which I do not
 # recall it doing before, so that it can install some aptitude pacakges. But
 # I am not sure if I can access the root password scored with -K, and I also
-# like keeping zoidy_home-fries tasks free from become, so we preinstall the
+# like keeping zoidy_apps_et_al tasks free from become, so we preinstall the
 # dependencies in:
 #
 #     zoidy_matecocido/tasks/install-develop-ruby.yml
