@@ -2,7 +2,7 @@
 
 - name: Ruby-Install Installer
   include_role:
-    name: zoidy_ruby-vroom
+    name: zoidy_ruby_vroom
     tasks_from: ruby-install-base
     apply:
       tags:
@@ -14,7 +14,7 @@
 
 - name: Ruby-Install Installer
   include_role:
-    name: zoidy_ruby-vroom
+    name: zoidy_ruby_vroom
     tasks_from: ruby-install-chruby
     apply:
       tags:
@@ -26,7 +26,7 @@
 
 - name: Ruby Gems Package Installer
   include_role:
-    name: zoidy_ruby-vroom
+    name: zoidy_ruby_vroom
     tasks_from: ruby-install-versions
     apply:
       tags:
@@ -38,7 +38,7 @@
 
 - name: Ruby Gems Package Installer
   include_role:
-    name: zoidy_ruby-vroom
+    name: zoidy_ruby_vroom
     tasks_from: ruby-rubygems-packages
     apply:
       tags:

@@ -1,4 +1,4 @@
-zoidy_ruby-vroom
+zoidy_ruby_vroom
 ================
 
 An Ansible role to install rubies, and related.
@@ -17,7 +17,7 @@ Add the role to the playbook::
 
   - hosts: servers
     roles:
-       - role: zoidy_ruby-vroom
+       - role: zoidy_ruby_vroom
 
 Then run the play::
 
