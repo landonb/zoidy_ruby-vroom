@@ -66,7 +66,7 @@
 #- fail: msg='FAIL'
 
 - name: Install chruby
-  make:
+  ansible.builtin.make:
     chdir: "{{ CHRUBY_DIR }}/{{ CHRUBY_NOM }}"
     target: install
   args:

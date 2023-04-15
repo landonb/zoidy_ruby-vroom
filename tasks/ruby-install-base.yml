@@ -107,7 +107,7 @@
     remote_src: yes
 
 - name: Install ruby-install
-  make:
+  ansible.builtin.make:
     chdir: "{{ RUBY_INSTALL_DIR }}/{{ RUBY_INSTALL_NOM }}"
     target: install
   args:

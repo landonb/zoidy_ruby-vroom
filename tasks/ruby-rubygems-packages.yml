@@ -10,7 +10,7 @@
 
 # PROFILING: 2019-03-19: Task took: 169.23s.
 - name: Install Many Ruby Gems (chrubies)
-  shell: >
+  ansible.builtin.shell: >
     source {{ ansible_env.HOME }}/.local/share/chruby/chruby.sh && \
     chruby {{ item[0] }} && \
     gem install --user-install {{ item[1] }}
